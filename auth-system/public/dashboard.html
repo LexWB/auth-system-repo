@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Кабінет</title>
+</head>
+<body>
+  <h2>Вітаємо!</h2>
+  <p id="email">Завантаження...</p>
+  <button id="logoutBtn">Вийти</button> //Додати кнопку «Вийти» на сторінку, доступну після входу
+
+  <script>
+    async function getUser() { //При кожному завантаженні сторінки перевіряти наявність валідного токена.
+      const res = await fetch('/auth/me', { credentials: 'include' }); // Виконати запит до маршруту /me або аналогічного
+      if (res.ok) { //Якщо токен дійсний — залишити користувача авторизованим
+        const data = await res.json();
+        document.getElementById('email').textContent = `Ви увійшли як: ${data.email}`;
+      } else { //Якщо ні — перенаправити на сторінку входу
+        window.location.href = '/login.html'; //Заборонити доступ до захищених сторінок без токена
+      }
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', async () => { //При натисканні на кнопку має виконуватись HTTP-запит до маршруту /logout
+      const res = await fetch('/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      if (res.ok) {
+        alert('Ви вийшли з акаунта'); //Показати повідомлення «Ви вийшли з акаунта»
+        window.location.href = '/login.html'; //Перенаправити користувача на сторінку входу.
+      }
+    });
+
+    getUser();
+  </script>
+</body>
+</html>
